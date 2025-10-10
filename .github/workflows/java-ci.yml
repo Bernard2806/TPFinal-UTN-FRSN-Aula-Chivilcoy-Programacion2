@@ -1,9 +1,7 @@
 name: Java CI - Compilation Check
 
-# Se ejecuta en push a main/master y en Pull Requests
+# Se ejecuta en Pull Requests
 on:
-  push:
-    branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
 
