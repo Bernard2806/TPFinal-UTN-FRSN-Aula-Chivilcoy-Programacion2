@@ -1,7 +1,6 @@
 name: Compile and Sync to GitLab
 
 on:
-  # Se activa solo en pushes a la rama principal
   push:
     branches:
       - main
@@ -13,6 +12,7 @@ jobs:
       - name: Checkout full repo
         uses: actions/checkout@v4
         with:
+          # Necesitamos el historial completo para hacer el push
           fetch-depth: 0
 
       - name: Set up JDK 25
@@ -26,9 +26,23 @@ jobs:
         run: javac $(find . -name "*.java")
 
       # Este paso SOLO se ejecutará si la compilación fue exitosa.
-      - name: Push to GitLab
+      - name: Push to GitLab (excluding .github folder)
         run: |
+          # Configurar git con las credenciales del bot
           git config --global user.name "GitHub Actions Sync"
           git config --global user.email "actions@github.com"
+          
+          # Crear una nueva rama temporal para la sincronización
+          git checkout -b gitlab-sync
+          
+          # Eliminar la carpeta .github de esta nueva rama y hacer commit
+          # Usamos -rf para forzar la eliminación y --cached para no tener problemas si git se queja
+          git rm -rf --cached .github
+          git commit -m "chore: remove .github folder for GitLab sync"
+          
+          # Añadir el repositorio de GitLab como un remote
           git remote add gitlab https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/Bernard2806/TPFinal-UTN-FRSN-Programacion2.git
-          git push gitlab main
+          
+          # Forzar el push de nuestra rama local 'gitlab-sync' a la rama 'main' de GitLab
+          # El --force es necesario porque la historia de esta rama es diferente a la de main en GitLab
+          git push --force gitlab gitlab-sync:main
