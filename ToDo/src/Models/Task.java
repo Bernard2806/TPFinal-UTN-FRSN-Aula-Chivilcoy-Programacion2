@@ -1,7 +1,8 @@
-package Models;
+package models;
 
 import java.time.LocalDate;
-import Enums.*;
+
+import enums.*;
 
 public class Task {
 
