@@ -2,13 +2,15 @@ import java.util.Scanner;
 
 public class App {
     private static Scanner scanner = new Scanner(System.in);
+    private static final int EXIT_OPTION = 6;
 
     public static void main(String[] args) throws Exception {
         viewMenu();
+        scanner.close();
     }
 
     private static void viewMenu() {
-        int opcion = 0;
+        int option = 0;
         do {
             System.out.println("Menú:");
             System.out.println("1) Crear tarea");
@@ -18,14 +20,19 @@ public class App {
             System.out.println("5) Reportes");
             System.out.println("6) Salir");
 
-            opcion = scanner.nextInt();
-            scanner.nextLine();
-            logicMenu(opcion);
-        } while (opcion != 6);
+            try {
+                option = scanner.nextInt();
+                scanner.nextLine();
+                logicMenu(option);
+            } catch (java.util.InputMismatchException e) {
+                System.out.println("Error: Por favor, ingrese una opción numérica válida.");
+                scanner.nextLine();
+            }
+        } while (option != EXIT_OPTION);
     }
 
-    private static void logicMenu(int opcion) {
-        switch (opcion) {
+    private static void logicMenu(int option) {
+        switch (option) {
             case 1:
                 System.out.println("Crear tarea");
                 break;
@@ -38,15 +45,14 @@ public class App {
             case 4:
                 System.out.println("Eliminar tarea");
                 break;
-
             case 5:
                 System.out.println("Reportes");
                 break;
-            case 6:
+            case EXIT_OPTION:
                 System.out.println("Salir");
                 break;
             default:
-                System.out.println("Opción inválida");
+                System.out.println("Error: Opción inválida");
                 break;
         }
     }
