@@ -1,8 +1,10 @@
 package repository;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -62,7 +64,7 @@ public class CSVManager {
                     continue;
                 }
 
-                try{
+                try {
                     long id = Long.parseLong(parts[0]);
                     String title = parts[1];
                     String description = parts[2];
@@ -75,17 +77,15 @@ public class CSVManager {
                             .filter(s -> s.name().equalsIgnoreCase(statusString))
                             .findFirst()
                             .orElseThrow(() -> new IllegalArgumentException("Status inválido: " + statusString));
-                    
+
                     TaskPriority priority = Arrays.stream(TaskPriority.values())
                             .filter(p -> p.name().equalsIgnoreCase(priorityString))
                             .findFirst()
                             .orElseThrow(() -> new IllegalArgumentException("Prioridad inválida: " + priorityString));
 
-
                     Task task = new Task(id, title, description, startDate, dueDate, status, priority);
                     tasks.put(id, task);
-                }
-                catch(IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     System.out.println("❗ Error en formato fecha: " + line);
                 } catch (Exception e) {
                     System.out.println("❗ Error: " + e.getMessage());
@@ -96,4 +96,20 @@ public class CSVManager {
         }
         return tasks;
     }
+
+    public void saveTasks(HashMap<Long, Task> tasks) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePath), StandardCharsets.UTF_8)) {
+            // Encabezado CSV
+            writer.write("id,title,description,startDate,dueDate,status,priority");
+            writer.newLine();
+
+            for (Task task : tasks.values()) {
+                writer.write(task.toCSV());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("💥 Error al escribir en el archivo: " + e.getMessage());
+        }
+    }
+
 }

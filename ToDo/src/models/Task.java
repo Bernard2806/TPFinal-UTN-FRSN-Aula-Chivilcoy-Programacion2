@@ -83,4 +83,11 @@ public class Task {
     public void setPriority(TaskPriority priority) {
         this.priority = priority;
     }
+
+    // ---- Task Entity ToString() ----
+
+    public String toCSV() {
+        return id + "," + title + "," + description + "," + startDate
+                + "," + dueDate + "," + status + "," + priority;
+    }
 }
