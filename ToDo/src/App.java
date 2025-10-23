@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import helpers.ConsoleUtils;
 
 public class App {
     private static Scanner scanner = new Scanner(System.in);
@@ -12,6 +13,7 @@ public class App {
     private static void viewMenu() {
         int option = 0;
         do {
+            ConsoleUtils.clearConsole();
             System.out.println("Menú:");
             System.out.println("1) Crear tarea");
             System.out.println("2) Listar tareas");
@@ -32,9 +34,10 @@ public class App {
     }
 
     private static void logicMenu(int option) {
+        ConsoleUtils.clearConsole();
         switch (option) {
             case 1:
-                System.out.println("Crear tarea");
+                optionOne();
                 break;
             case 2:
                 System.out.println("Listar tareas");
@@ -55,5 +58,21 @@ public class App {
                 System.out.println("Error: Opción inválida");
                 break;
         }
+    }
+
+    private static void optionOne(){
+        System.out.println("---- Crear tarea ----");
+        System.out.println("Ingrese el titulo de la tarea:");
+        String title = scanner.nextLine();
+        System.out.println("Ingrese la descripcion de la tarea:");
+        String description = scanner.nextLine();
+        System.out.println("Ingrese la fecha de inicio de la tarea (DD/MM/YYYY):");
+        String startDate = scanner.nextLine();
+        System.out.println("Ingrese la fecha de vencimiento de la tarea (DD/MM/YYYY):");
+        String dueDate = scanner.nextLine();
+        System.out.println("Ingrese el estado de la tarea:");
+        String status = scanner.nextLine();
+        System.out.println("Ingrese la prioridad de la tarea:");
+        String priority = scanner.nextLine();
     }
 }
