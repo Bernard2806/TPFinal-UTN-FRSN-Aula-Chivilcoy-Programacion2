@@ -15,9 +15,10 @@ import java.util.HashMap;
 
 import enums.TaskPriority;
 import enums.TaskStatus;
+import interfaces.ICSVManager;
 import models.Task;
 
-public class CSVManager {
+public class CSVManager implements ICSVManager {
     private String filePath;
 
     public CSVManager(String filePath) {
