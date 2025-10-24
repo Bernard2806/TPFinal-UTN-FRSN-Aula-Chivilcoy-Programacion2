@@ -1,7 +1,7 @@
-<img align="right" width="200" height="100" src="https://github.com/user-attachments/assets/a0827ca6-20b7-4532-83b0-dd918cbcbc4d">
+<img align="right" width="150" height="150" src="https://i.imgur.com/JQhUUdE.png">
 
 ### Sistema de Gestión de Tareas “To Do” - Segundo Cuatrimestre UTN FRSN
-###### Universidad Tecnológica Nacional - Facultad Regional San Nicolás (UTN FRSN)
+###### Universidad Tecnológica Nacional - Facultad Regional San Nicolás (UTN FRSN) - Aula Chivilcoy
 ###### Programación 2 - 2025
 ###### Profesores: Matías Garro y Gabriel Tonelli
 
