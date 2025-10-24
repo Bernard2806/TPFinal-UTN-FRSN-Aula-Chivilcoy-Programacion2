@@ -46,15 +46,15 @@ public class App {
                 optionOne();
                 break;
             case 2:
+                optionTwo();
                 break;
             case 3:
-                System.out.println("Editar tarea");
+                optionThree();
                 break;
             case 4:
-                System.out.println("Eliminar tarea");
+                optionFour();
                 break;
             case 5:
-                System.out.println("Reportes");
                 break;
             case EXIT_OPTION:
                 optionExit();
@@ -83,6 +83,59 @@ public class App {
 
     private static void optionTwo() {
         System.out.println("---- Listar tareas ----");
+
+        var tasks = taskManager.getTasks();
+
+        if (tasks.isEmpty()) {
+            System.out.println("No hay tareas para mostrar.");
+            return;
+        }
+
+        for (Task task : tasks.values()) {
+            System.out.println(task);
+            System.out.println("----------------");
+        }
+    }
+
+    private static void optionThree() {
+        System.out.println("---- Editar tarea ----");
+
+        Task task = findTaskById();
+
+        if (task == null) {
+            System.out.println("No se encontró la tarea.");
+            return;
+        }
+
+        TaskInputHelper.editTaskFromConsole(scanner, task);
+
+        System.out.println("Tarea editada con éxito!");
+    }
+
+    private static void optionFour() {
+        System.out.println("---- Eliminar tarea ----");
+
+        optionTwo();
+
+        System.out.println("Ingrese el ID de la tarea a eliminar:");
+        long id = scanner.nextLong();
+        scanner.nextLine();
+
+        taskManager.removeTask(id);
+
+        System.out.println("Tarea eliminada con éxito!");
+    }
+
+    private static Task findTaskById() {
+        System.out.println("---- Buscar tarea por ID ----");
+
+        optionTwo();
+
+        System.out.println("Ingrese el ID de la tarea:");
+        long id = scanner.nextLong();
+        scanner.nextLine();
+
+        return taskManager.getTask(id);
     }
 
     private static void optionExit() {

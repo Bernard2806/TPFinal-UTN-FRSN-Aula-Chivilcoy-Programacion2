@@ -141,6 +141,52 @@ public class TaskInputHelper {
         }
     }
 
+    public static void editTaskFromConsole(Scanner scanner, Task task) {
+        int option;
+        do {
+            System.out.println("---- Editar Tarea ----");
+            System.out.println(task);
+            System.out.println("----------------");
+            System.out.println("¿Qué desea editar?");
+            System.out.println("1. Título");
+            System.out.println("2. Descripción");
+            System.out.println("3. Fecha de inicio");
+            System.out.println("4. Fecha de fin");
+            System.out.println("5. Estado");
+            System.out.println("6. Prioridad");
+            System.out.println("7. Salir");
+
+            option = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (option) {
+                case 1:
+                    task.setTitle(promptForString(scanner, "Ingrese el nuevo título:"));
+                    break;
+                case 2:
+                    task.setDescription(promptForString(scanner, "Ingrese la nueva descripción:"));
+                    break;
+                case 3:
+                    task.setStartDate(promptForDate(scanner, "Ingrese la nueva fecha de inicio (dd/MM/yyyy):"));
+                    break;
+                case 4:
+                    task.setDueDate(promptForDueDate(scanner, "Ingrese la nueva fecha de fin (dd/MM/yyyy):", task.getStartDate()));
+                    break;
+                case 5:
+                    task.setStatus(promptForTaskStatus(scanner, "Seleccione el nuevo estado:"));
+                    break;
+                case 6:
+                    task.setPriority(promptForTaskPriority(scanner, "Seleccione la nueva prioridad:"));
+                    break;
+                case 7:
+                    break;
+                default:
+                    System.out.println("Opción inválida.");
+                    break;
+            }
+        } while (option != 7);
+    }
+
     /**
      * Solicita un TaskPriority, mostrando el displayName y validando con
      * numericValue.
