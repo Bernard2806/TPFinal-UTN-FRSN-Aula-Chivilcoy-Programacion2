@@ -1,9 +1,15 @@
 import java.util.Scanner;
 import helpers.ConsoleUtils;
+import helpers.TaskInputHelper;
+import interfaces.ITaskManager;
+import models.Task;
+import services.TaskManager;
 
 public class App {
     private static Scanner scanner = new Scanner(System.in);
     private static final int EXIT_OPTION = 6;
+    private static final String FILE_SAVE_URI = "archives/tasks.csv";
+    private static ITaskManager taskManager = new TaskManager(FILE_SAVE_URI);
 
     public static void main(String[] args) throws Exception {
         viewMenu();
@@ -40,7 +46,6 @@ public class App {
                 optionOne();
                 break;
             case 2:
-                System.out.println("Listar tareas");
                 break;
             case 3:
                 System.out.println("Editar tarea");
@@ -58,21 +63,22 @@ public class App {
                 System.out.println("Error: Opción inválida");
                 break;
         }
+        scanner.nextLine();
+        ConsoleUtils.clearConsole();
     }
 
     private static void optionOne(){
         System.out.println("---- Crear tarea ----");
-        System.out.println("Ingrese el titulo de la tarea:");
-        String title = scanner.nextLine();
-        System.out.println("Ingrese la descripcion de la tarea:");
-        String description = scanner.nextLine();
-        System.out.println("Ingrese la fecha de inicio de la tarea (DD/MM/YYYY):");
-        String startDate = scanner.nextLine();
-        System.out.println("Ingrese la fecha de vencimiento de la tarea (DD/MM/YYYY):");
-        String dueDate = scanner.nextLine();
-        System.out.println("Ingrese el estado de la tarea:");
-        String status = scanner.nextLine();
-        System.out.println("Ingrese la prioridad de la tarea:");
-        String priority = scanner.nextLine();
+        
+        Task newTask = TaskInputHelper.createNewTaskFromConsole(scanner);
+
+        taskManager.addTask(newTask);
+        System.out.println("Tarea creada con éxito!");
+        System.out.println(newTask);
+
+    }
+
+    private static void optionTwo(){
+        System.out.println("---- Listar tareas ----");
     }
 }

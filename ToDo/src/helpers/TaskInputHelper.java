@@ -1,0 +1,157 @@
+package helpers;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.Scanner;
+
+import enums.TaskPriority;
+import enums.TaskStatus;
+import models.Task;
+
+public class TaskInputHelper {
+
+    // Define el formato de fecha argentino (dd/MM/yyyy)
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
+            .ofPattern("dd/MM/yyyy")
+            .withResolverStyle(ResolverStyle.STRICT);
+
+    /**
+     * Método principal que solicita todos los datos para crear una nueva Tarea.
+     */
+    public static Task createNewTaskFromConsole(Scanner scanner) {
+        String title = promptForString(scanner, "Ingrese el título:");
+        String description = promptForString(scanner, "Ingrese la descripción:");
+
+        LocalDate startDate = promptForDate(scanner, "Ingrese la fecha de inicio (dd/MM/yyyy):");
+        LocalDate dueDate = promptForDueDate(scanner, "Ingrese la fecha de fin (dd/MM/yyyy):", startDate);
+
+        TaskStatus status = promptForTaskStatus(scanner, "Seleccione el estado:");
+        TaskPriority priority = promptForTaskPriority(scanner, "Seleccione la prioridad:");
+
+        // Asumimos ID 0, que luego será gestionado por otra capa (servicio).
+        return new Task(0, title, description, startDate, dueDate, status, priority);
+    }
+
+    /**
+     * Solicita un String no vacío. (Sin cambios)
+     */
+    public static String promptForString(Scanner scanner, String prompt) {
+        String input;
+        while (true) {
+            System.out.println(prompt);
+            input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.out.println("Error: El valor no puede estar vacío. Intente de nuevo.");
+            } else {
+                return input;
+            }
+        }
+    }
+
+    /**
+     * Solicita una fecha en formato dd/MM/yyyy. (Sin cambios)
+     */
+    public static LocalDate promptForDate(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.println(prompt);
+            String input = scanner.nextLine().trim();
+            try {
+                return LocalDate.parse(input, DATE_FORMATTER);
+            } catch (DateTimeParseException e) {
+                System.out.println("Error: Formato de fecha incorrecto. Use dd/MM/yyyy. Intente de nuevo.");
+            }
+        }
+    }
+
+    /**
+     * Solicita la fecha de fin (dueDate), validando que sea >= startDate. (Sin
+     * cambios)
+     */
+    public static LocalDate promptForDueDate(Scanner scanner, String prompt, LocalDate startDate) {
+        LocalDate dueDate;
+        while (true) {
+            dueDate = promptForDate(scanner, prompt); // Reutiliza el validador de fecha
+            if (dueDate.isBefore(startDate)) {
+                System.out.println("Error: La fecha de fin no puede ser anterior a la fecha de inicio ("
+                        + startDate.format(DATE_FORMATTER) + "). Intente de nuevo.");
+            } else {
+                return dueDate;
+            }
+        }
+    }
+
+    /**
+     * Helper simple para pedir un ID (long). (Sin cambios)
+     */
+    public static long promptForTaskId(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.println(prompt);
+            String input = scanner.nextLine().trim();
+            try {
+                return Long.parseLong(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Debe ingresar un número válido. Intente de nuevo.");
+            }
+        }
+    }
+
+    // --- NUEVOS MÉTODOS PARA ENUMS ESPECÍFICOS ---
+
+    /**
+     * Solicita un TaskStatus, mostrando el displayName y validando con
+     * numericValue.
+     */
+    public static TaskStatus promptForTaskStatus(Scanner scanner, String prompt) {
+        System.out.println(prompt);
+
+        // Muestra las opciones usando los métodos del enum
+        for (TaskStatus status : TaskStatus.values()) {
+            System.out.println(status.getNumericValue() + ". " + status.getDisplayName());
+        }
+        System.out.println("Ingrese el número de la opción:");
+
+        while (true) {
+            String input = scanner.nextLine().trim();
+            try {
+                int choice = Integer.parseInt(input);
+                // Usa el método estático del enum for la validación
+                return TaskStatus.fromNumericValue(choice);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Debe ingresar un número.");
+            } catch (IllegalArgumentException e) {
+                // Captura la excepción de fromNumericValue si el número no es válido
+                System.out.println("Error: Opción no válida. Intente de nuevo.");
+            }
+        }
+    }
+
+    /**
+     * Solicita un TaskPriority, mostrando el displayName y validando con
+     * numericValue.
+     */
+    public static TaskPriority promptForTaskPriority(Scanner scanner, String prompt) {
+        System.out.println(prompt);
+
+        // Muestra las opciones usando los métodos del enum
+        for (TaskPriority priority : TaskPriority.values()) {
+            System.out.println(priority.getNumericValue() + ". " + priority.getDisplayName());
+        }
+        System.out.println("Ingrese el número de la opción:");
+
+        while (true) {
+            String input = scanner.nextLine().trim();
+            try {
+                int choice = Integer.parseInt(input);
+                // Usa el método estático del enum for la validación
+                return TaskPriority.fromNumericValue(choice);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Debe ingresar un número.");
+            } catch (IllegalArgumentException e) {
+                // Captura la excepción de fromNumericValue si el número no es válido
+                System.out.println("Error: Opción no válida. Intente de nuevo.");
+            }
+        }
+    }
+}

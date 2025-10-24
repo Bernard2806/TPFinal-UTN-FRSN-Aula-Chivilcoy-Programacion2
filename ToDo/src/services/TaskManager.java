@@ -29,6 +29,8 @@ public class TaskManager implements ITaskManager {
     // ---- Task Manager Public Methods ----
 
     public void addTask(Task task) {
+        if (task.getId() == 0)
+            task.setId(nextId);
         tasks.put(nextId, task);
         nextId++;
     }

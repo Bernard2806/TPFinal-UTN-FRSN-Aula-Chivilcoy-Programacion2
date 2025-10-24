@@ -1,5 +1,7 @@
 package interfaces;
 
+import java.util.HashMap;
+
 import models.Task;
 
 public interface ITaskManager {
@@ -8,4 +10,6 @@ public interface ITaskManager {
     void removeTask(long id);
 
     Task getTask(long id);
+
+    HashMap<Long, Task> getTasks();
 }

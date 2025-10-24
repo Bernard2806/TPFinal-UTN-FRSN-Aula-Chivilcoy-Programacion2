@@ -84,8 +84,23 @@ public class Task {
         this.priority = priority;
     }
 
-    // ---- Task Entity ToString() ----
+    // ---- Task Entity toString() ----
 
+    @Override
+    public String toString() {
+        StringBuilder output = new StringBuilder();
+
+        output.append("Título: ").append(this.getTitle()).append("\n");
+        output.append("Descripción: ").append(this.getDescription()).append("\n");
+        output.append("Inicio: ").append(this.getStartDate()).append("\n");
+        output.append("Fin: ").append(this.getDueDate()).append("\n");
+        output.append("Estado: ").append(this.getStatus().getDisplayName()).append("\n");
+        output.append("Prioridad: ").append(this.getPriority().getDisplayName());
+
+        return output.toString();
+    }
+
+    // ---- Task Entity toCSV() ----
     public String toCSV() {
         return id + "," + title + "," + description + "," + startDate
                 + "," + dueDate + "," + status + "," + priority;
