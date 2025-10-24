@@ -57,7 +57,7 @@ public class App {
                 System.out.println("Reportes");
                 break;
             case EXIT_OPTION:
-                System.out.println("Salir");
+                optionExit();
                 break;
             default:
                 System.out.println("Error: Opción inválida");
@@ -67,18 +67,27 @@ public class App {
         ConsoleUtils.clearConsole();
     }
 
-    private static void optionOne(){
+    private static void optionOne() {
         System.out.println("---- Crear tarea ----");
-        
+
         Task newTask = TaskInputHelper.createNewTaskFromConsole(scanner);
 
         taskManager.addTask(newTask);
+
+        ConsoleUtils.clearConsole();
+
         System.out.println("Tarea creada con éxito!");
         System.out.println(newTask);
 
     }
 
-    private static void optionTwo(){
+    private static void optionTwo() {
         System.out.println("---- Listar tareas ----");
+    }
+
+    private static void optionExit() {
+        taskManager.saveTasks();
+        System.out.println("Saliendo...");
+        System.exit(0);
     }
 }

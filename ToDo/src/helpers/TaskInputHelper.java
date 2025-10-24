@@ -3,7 +3,6 @@ package helpers;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.Scanner;
 
 import enums.TaskPriority;
@@ -14,8 +13,7 @@ public class TaskInputHelper {
 
     // Define el formato de fecha argentino (dd/MM/yyyy)
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
-            .ofPattern("dd/MM/yyyy")
-            .withResolverStyle(ResolverStyle.STRICT);
+            .ofPattern("dd/MM/yyyy");
 
     /**
      * Método principal que solicita todos los datos para crear una nueva Tarea.
@@ -54,12 +52,28 @@ public class TaskInputHelper {
      * Solicita una fecha en formato dd/MM/yyyy. (Sin cambios)
      */
     public static LocalDate promptForDate(Scanner scanner, String prompt) {
+        // Obtenemos la fecha de hoy una sola vez, antes de empezar el bucle
+        LocalDate today = LocalDate.now();
+
         while (true) {
             System.out.println(prompt);
             String input = scanner.nextLine().trim();
             try {
-                return LocalDate.parse(input, DATE_FORMATTER);
+                // 1. Intenta parsear la fecha
+                LocalDate parsedDate = LocalDate.parse(input, DATE_FORMATTER);
+
+                // 2. NUEVA VALIDACIÓN: Comprueba si la fecha es anterior a hoy
+                if (parsedDate.isBefore(today)) {
+                    System.out.println(
+                            "Error: La fecha no puede ser en el pasado. Ingrese la fecha de hoy o una futura. Intente de nuevo.");
+                    continue; // Vuelve al inicio del bucle sin retornar nada
+                }
+
+                // 3. Si ambas validaciones pasan, retorna la fecha
+                return parsedDate;
+
             } catch (DateTimeParseException e) {
+                // Captura solo el error de formato
                 System.out.println("Error: Formato de fecha incorrecto. Use dd/MM/yyyy. Intente de nuevo.");
             }
         }

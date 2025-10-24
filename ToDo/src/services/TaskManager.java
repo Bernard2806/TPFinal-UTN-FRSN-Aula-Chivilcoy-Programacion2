@@ -47,6 +47,10 @@ public class TaskManager implements ITaskManager {
         return tasks;
     }
 
+    public void saveTasks() {
+        csvManager.saveTasks(tasks);
+    }
+
     // ---- Task Manager Private Methods ----
 
     public long getNextId() {

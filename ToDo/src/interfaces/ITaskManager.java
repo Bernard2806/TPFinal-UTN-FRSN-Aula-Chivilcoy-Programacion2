@@ -12,4 +12,6 @@ public interface ITaskManager {
     Task getTask(long id);
 
     HashMap<Long, Task> getTasks();
+
+    void saveTasks();
 }

@@ -23,6 +23,7 @@ public class CSVManager implements ICSVManager {
 
     public CSVManager(String filePath) {
         this.filePath = filePath;
+        createFileIfMissing();
     }
 
     public void createFileIfMissing() {
@@ -99,8 +100,9 @@ public class CSVManager implements ICSVManager {
     }
 
     public void saveTasks(HashMap<Long, Task> tasks) {
+        createFileIfMissing();
+
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePath), StandardCharsets.UTF_8)) {
-            // Encabezado CSV
             writer.write("id,title,description,startDate,dueDate,status,priority");
             writer.newLine();
 
