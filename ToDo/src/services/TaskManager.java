@@ -2,21 +2,28 @@ package services;
 
 import java.util.HashMap;
 
-import interfaces.*;
+import interfaces.ITaskManager;
+import interfaces.ICSVManager;
+import repository.CSVManager;
 import models.Task;
 
 public class TaskManager implements ITaskManager {
 
     // ---- Task Manager Data ----
-    HashMap<Long, Task> tasks;
-    long nextId;
-    String fileSaveUri;
+    private HashMap<Long, Task> tasks;
+    private long nextId;
+    private String fileSaveUri;
+
+    // ---- Task Manager CSV Manager ----
+    private ICSVManager csvManager;
 
     // ---- Task Manager Constructor ----
     public TaskManager(String fileSaveUri) {
-        tasks = new HashMap<Long, Task>();
-        nextId = 0;
         this.fileSaveUri = fileSaveUri;
+        this.csvManager = new CSVManager(fileSaveUri);
+        this.csvManager.createFileIfMissing();
+        this.tasks = csvManager.loadTasks();
+        nextId = getNextId();
     }
 
     // ---- Task Manager Public Methods ----
@@ -32,5 +39,17 @@ public class TaskManager implements ITaskManager {
 
     public Task getTask(long id) {
         return tasks.get(id);
+    }
+
+    public HashMap<Long, Task> getTasks() {
+        return tasks;
+    }
+
+    // ---- Task Manager Private Methods ----
+
+    public long getNextId() {
+        return tasks.keySet().stream()
+                .max(Long::compare)
+                .orElse(0L) + 1;
     }
 }
