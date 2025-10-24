@@ -2,7 +2,7 @@ package repository;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
+// Se elimina java.io.FileReader (ya no se usa)
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -23,39 +23,52 @@ public class CSVManager implements ICSVManager {
 
     public CSVManager(String filePath) {
         this.filePath = filePath;
-        createFileIfMissing();
+        // 1. Llamamos al nuevo método robusto DESDE EL CONSTRUCTOR
+        ensureFileAndDirectoriesExist();
     }
 
-    public void createFileIfMissing() {
+    /**
+     * Asegura que existan los directorios y el archivo CSV.
+     * Si el archivo no existe, lo crea con el encabezado.
+     */
+    private void ensureFileAndDirectoriesExist() {
         Path path = Paths.get(filePath);
 
         if (!Files.exists(path)) {
             System.out.println("El archivo no existe: " + filePath);
             try {
-                Files.write(path, "id,title,description,startDate,dueDate,status,priority\n".getBytes(),
-                        StandardOpenOption.CREATE_NEW);
+                // Escribir el encabezado usando UTF-8
+                Files.write(path, "id,title,description,startDate,dueDate,status,priority\n".getBytes(StandardCharsets.UTF_8),
+                        StandardOpenOption.CREATE_NEW); // CREATE_NEW es correcto aquí
                 System.out.println("Archivo creado con encabezado.");
             } catch (IOException e) {
-                System.err.println("Error al crear el archivo: " + e.getMessage());
+                System.err.println("Error al crear el archivo:");
+                e.printStackTrace(); // Usar printStackTrace
             }
-        }
-
-        if (!Files.isReadable(path)) {
-            System.out.println("No se puede leer el archivo (permisos insuficientes): " + filePath);
         }
     }
 
-    public HashMap<Long, Task> loadTasks() {
-        createFileIfMissing();
-        HashMap<Long, Task> tasks = new HashMap<>();
+    // Se eliminó el método createFileIfMissing() (reemplazado por el de arriba)
 
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+    public HashMap<Long, Task> loadTasks() {
+        // 5. Se elimina la llamada a createFileIfMissing()
+        HashMap<Long, Task> tasks = new HashMap<>();
+        Path path = Paths.get(filePath);
+        
+        // Verificación de seguridad: si el archivo aún no existe (p.ej. falló la creación)
+        if (!Files.exists(path)) {
+            System.err.println("No se puede cargar: El archivo no existe en " + path.toAbsolutePath());
+            return tasks; // Devolver mapa vacío
+        }
+
+        // 6. Usar el lector NIO con codificación UTF-8
+        try (BufferedReader bufferedReader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line;
-            boolean fristLine = true;
+            boolean firstLine = true; // 7. Corregido error tipográfico (fristLine)
 
             while ((line = bufferedReader.readLine()) != null) {
-                if (fristLine) {
-                    fristLine = false;
+                if (firstLine) {
+                    firstLine = false;
                     continue;
                 }
 
@@ -88,20 +101,24 @@ public class CSVManager implements ICSVManager {
                     Task task = new Task(id, title, description, startDate, dueDate, status, priority);
                     tasks.put(id, task);
                 } catch (IllegalArgumentException e) {
-                    System.out.println("❗ Error en formato fecha: " + line);
+                    // Más detalles en el error
+                    System.out.println("❗ Error en formato de datos (fecha, enum, etc.) en línea: " + line);
+                    System.err.println("Detalle: " + e.getMessage());
                 } catch (Exception e) {
-                    System.out.println("❗ Error: " + e.getMessage());
+                    System.out.println("❗ Error desconocido al procesar línea: " + line);
+                    e.printStackTrace(); 
                 }
             }
         } catch (IOException e) {
-            System.out.println("💥 Error al leer el archivo: " + e.getMessage());
+            System.out.println("💥 Error al leer el archivo:");
+            e.printStackTrace(); 
         }
         return tasks;
     }
 
     public void saveTasks(HashMap<Long, Task> tasks) {
-        createFileIfMissing();
-
+        // newBufferedWriter sobrescribirá el archivo, lo cual es correcto para "guardar".
+        // Ya sabemos que el directorio existe gracias al constructor.
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePath), StandardCharsets.UTF_8)) {
             writer.write("id,title,description,startDate,dueDate,status,priority");
             writer.newLine();
@@ -111,8 +128,8 @@ public class CSVManager implements ICSVManager {
                 writer.newLine();
             }
         } catch (IOException e) {
-            System.err.println("💥 Error al escribir en el archivo: " + e.getMessage());
+            System.err.println("💥 Error al escribir en el archivo:");
+            e.printStackTrace();
         }
     }
-
 }

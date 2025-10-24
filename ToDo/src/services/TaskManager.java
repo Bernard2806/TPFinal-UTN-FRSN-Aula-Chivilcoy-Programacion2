@@ -21,7 +21,6 @@ public class TaskManager implements ITaskManager {
     public TaskManager(String fileSaveUri) {
         this.fileSaveUri = fileSaveUri;
         this.csvManager = new CSVManager(fileSaveUri);
-        this.csvManager.createFileIfMissing();
         this.tasks = csvManager.loadTasks();
         nextId = getNextId();
     }
@@ -48,7 +47,7 @@ public class TaskManager implements ITaskManager {
     }
 
     public void saveTasks() {
-        csvManager.saveTasks(tasks);
+        csvManager.saveTasks(this.tasks);
     }
 
     // ---- Task Manager Private Methods ----
