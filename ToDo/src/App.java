@@ -1,4 +1,11 @@
+import java.time.LocalDate;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 import helpers.ConsoleUtils;
 import helpers.TaskInputHelper;
 import interfaces.ITaskManager;
@@ -55,6 +62,7 @@ public class App {
                 optionFour();
                 break;
             case 5:
+                optionFive();
                 break;
             case EXIT_OPTION:
                 optionExit();
@@ -124,6 +132,94 @@ public class App {
         taskManager.removeTask(id);
 
         System.out.println("Tarea eliminada con éxito!");
+    }
+
+    private static void optionFive() {
+        int option = 0;
+        do {
+            System.out.println("---- Reportes ----");
+            System.out.println("1) Listar Todas las Tareas");
+            System.out.println("2) Tareas por Estado");
+            System.out.println("3) Tareas de la Semana Actual");
+            System.out.println("4) Volver");
+
+            try {
+                option = scanner.nextInt();
+                scanner.nextLine();
+                logicReportsMenu(option);
+            } catch (java.util.InputMismatchException e) {
+                System.out.println("Error: Por favor, ingrese una opción numérica válida.");
+                scanner.nextLine();
+            }
+        } while (option != 4);
+    }
+
+    private static void logicReportsMenu(int option) {
+        ConsoleUtils.clearConsole();
+        switch (option) {
+            case 1:
+                optionTwo();
+                break;
+            case 2:
+                listTasksByStatus();
+                break;
+            case 3:
+                listTasksCurrentWeek();
+                break;
+            case 4:
+                break;
+            default:
+                System.out.println("Error: Opción inválida");
+                break;
+        }
+        scanner.nextLine();
+    }
+
+    private static void listTasksByStatus() {
+        System.out.println("---- Tareas por Estado ----");
+
+        Map<enums.TaskStatus, List<Task>> tasksByStatus = taskManager.getTasks().values().stream()
+                .collect(Collectors.groupingBy(Task::getStatus));
+
+        if (tasksByStatus.isEmpty()) {
+            System.out.println("No hay tareas para mostrar.");
+            return;
+        }
+
+        tasksByStatus.forEach((status, tasks) -> {
+            System.out.println("Estado: " + status);
+            tasks.forEach(task -> {
+                System.out.println(task);
+                System.out.println("----------------");
+            });
+        });
+    }
+
+    private static void listTasksCurrentWeek() {
+        System.out.println("---- Tareas de la Semana Actual ----");
+
+        LocalDate today = LocalDate.now();
+        Locale locale = Locale.getDefault();
+        TemporalField fieldISO = WeekFields.of(locale).dayOfWeek();
+        LocalDate startOfWeek = today.with(fieldISO, 1); 
+        LocalDate endOfWeek = startOfWeek.plusDays(6); 
+
+        List<Task> tasksCurrentWeek = taskManager.getTasks().values().stream()
+                .filter(task -> {
+                    LocalDate dueDate = task.getDueDate();
+                    return !dueDate.isBefore(startOfWeek) && !dueDate.isAfter(endOfWeek);
+                })
+                .collect(Collectors.toList());
+
+        if (tasksCurrentWeek.isEmpty()) {
+            System.out.println("No hay tareas para esta semana.");
+            return;
+        }
+
+        tasksCurrentWeek.forEach(task -> {
+            System.out.println(task);
+            System.out.println("----------------");
+        });
     }
 
     private static Task findTaskById() {
